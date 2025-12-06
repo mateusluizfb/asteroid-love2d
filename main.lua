@@ -26,7 +26,7 @@ function love.update(dt)
   updateSpaceship(SpaceShip)
 end
 
-function drawSpaceship(spaceShip)
+function drawSpaceshipMath(spaceShip)
   local width = spaceShip.width
   local height = spaceShip.height
   local angle = spaceShip.angle
@@ -54,7 +54,31 @@ function drawSpaceship(spaceShip)
   )
 end
 
+
+function drawSpaceshipLove(spaceShip)
+  local width = spaceShip.width
+  local height = spaceShip.height
+  local half_width = width / 2
+
+  love.graphics.push()
+
+  love.graphics.translate(spaceShip.x, spaceShip.y)
+  love.graphics.rotate(spaceShip.angle)
+
+  local px1, py1 = 0, -height / 2
+  local px2, py2 = -width / 2, height / 2
+  local px3, py3 = width / 2, height / 2
+
+  love.graphics.polygon("fill",
+    px1, py1,
+    px2, py2,
+    px3, py3
+  )
+
+  love.graphics.pop()
+end
+
 function love.draw()
   love.graphics.setColor(0, 0.4, 0.4)
-  drawSpaceship(SpaceShip)
+  drawSpaceshipLove(SpaceShip)
 end
