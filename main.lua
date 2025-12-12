@@ -13,8 +13,8 @@ function love.load()
     turnSpeed = 2,
   }
 
-  rocks = {}
-  rocks_timer = 0
+  asteroids = {}
+  asteroids_timer = 0
 end
 
 function updateSpaceship(dt, spaceShip)
@@ -41,20 +41,29 @@ function updateSpaceship(dt, spaceShip)
   end
 end
 
+function updateAsteroids(dt)
+  asteroids_timer = asteroids_timer + dt
+
+  if asteroids_timer >= 2 then
+    asteroids_timer = 0
+
+    local asteroid = {
+      x = math.random(0, love.graphics.getWidth()),
+      y = math.random(0, love.graphics.getHeight()),
+      angle = math.random() * 2 * math.pi,
+    }
+    table.insert(asteroids, asteroid)
+  end
+
+  for _, asteroid in ipairs(asteroids) do
+    asteroid.x = asteroid.x + math.cos(asteroid.angle) * 20 * dt
+    asteroid.y = asteroid.y + math.sin(asteroid.angle) * 20 * dt
+  end
+end
+
 function love.update(dt)
   updateSpaceship(dt, ship)
-
-  rocks_timer = rocks_timer + dt
-
-  if rocks_timer >= 2 then
-    rocks_timer = 0
-
-    local rock = {
-     x = math.random(0, love.graphics.getWidth()),
-     y = math.random(0, love.graphics.getHeight()),
-    }
-    table.insert(rocks, rock)
-  end
+  updateAsteroids(dt)
 end
 
 function drawTriangle(x, y, width, height, angle)
@@ -78,11 +87,12 @@ function drawTriangle(x, y, width, height, angle)
   love.graphics.pop()
 end
 
-function drawDecagon(x, y)
+function drawDecagon(x, y, angle)
   love.graphics.push()
 
   love.graphics.translate(x, y)
   love.graphics.scale(10, 10)
+  love.graphics.rotate(angle)
 
   local px1, py1 = 1, 2 
   local px2, py2 = 2, 3
@@ -115,8 +125,8 @@ function love.draw()
   love.graphics.setColor(0, 0.4, 0.4)
   drawTriangle(ship.x, ship.y, ship.width, ship.height, ship.angle)
   
-  for _, rock in ipairs(rocks) do
+  for _, asteroid in ipairs(asteroids) do
    love.graphics.setColor(0.5, 0.5, 0.5)
-   drawDecagon(rock.x, rock.y)
+   drawDecagon(asteroid.x, asteroid.y, asteroid.angle)
   end
 end
