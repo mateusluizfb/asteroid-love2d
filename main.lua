@@ -12,6 +12,9 @@ function love.load()
     speed = 50,
     turnSpeed = 2,
   }
+
+  rocks = {}
+  rocks_timer = 0
 end
 
 function updateSpaceship(dt, spaceShip)
@@ -39,7 +42,19 @@ function updateSpaceship(dt, spaceShip)
 end
 
 function love.update(dt)
- updateSpaceship(dt, ship)
+  updateSpaceship(dt, ship)
+
+  rocks_timer = rocks_timer + dt
+
+  if rocks_timer >= 2 then
+    rocks_timer = 0
+
+    local rock = {
+     x = math.random(0, love.graphics.getWidth()),
+     y = math.random(0, love.graphics.getHeight()),
+    }
+    table.insert(rocks, rock)
+  end
 end
 
 function drawTriangle(x, y, width, height, angle)
@@ -100,7 +115,8 @@ function love.draw()
   love.graphics.setColor(0, 0.4, 0.4)
   drawTriangle(ship.x, ship.y, ship.width, ship.height, ship.angle)
   
-
-  local width, height = love.graphics.getDimensions()
-  drawDecagon((width / 2) + 100, (height / 2) + 100)
+  for _, rock in ipairs(rocks) do
+   love.graphics.setColor(0.5, 0.5, 0.5)
+   drawDecagon(rock.x, rock.y)
+  end
 end
