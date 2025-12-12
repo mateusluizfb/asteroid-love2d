@@ -3,13 +3,13 @@ function love.load()
   windowCenterX = width / 2
   windowCenterY = height / 2
 
-  SpaceShip = {
+  ship = {
     x = windowCenterX,
     y = windowCenterY,
     width = 30,
     height = 15,
     angle = 0,
-    speed = 20,
+    speed = 50,
     turnSpeed = 2,
   }
 end
@@ -39,18 +39,16 @@ function updateSpaceship(dt, spaceShip)
 end
 
 function love.update(dt)
- updateSpaceship(dt, SpaceShip)
+ updateSpaceship(dt, ship)
 end
 
-function drawSpaceshipLove(spaceShip)
-  local width = spaceShip.width
-  local height = spaceShip.height
+function drawTriangle(x, y, width, height, angle)
   local half_width = width / 2
 
   love.graphics.push()
 
-  love.graphics.translate(spaceShip.x, spaceShip.y)
-  love.graphics.rotate(spaceShip.angle)
+  love.graphics.translate(x, y)
+  love.graphics.rotate(angle)
 
   local px1, py1 = width / 2, 0
   local px2, py2 = -width / 2, height / 2
@@ -67,5 +65,5 @@ end
 
 function love.draw()
   love.graphics.setColor(0, 0.4, 0.4)
-  drawSpaceshipLove(SpaceShip)
+  drawTriangle(ship.x, ship.y, ship.width, ship.height, ship.angle)
 end
