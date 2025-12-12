@@ -63,7 +63,44 @@ function drawTriangle(x, y, width, height, angle)
   love.graphics.pop()
 end
 
+function drawDecagon(x, y)
+  love.graphics.push()
+
+  love.graphics.translate(x, y)
+  love.graphics.scale(10, 10)
+
+  local px1, py1 = 1, 2 
+  local px2, py2 = 2, 3
+  local px3, py3 = 3, 1
+  local px4, py4 = 2, -1
+  local px5, py5 = 3, -2
+  local px6, py6 = -1, -3
+  local px7, py7 = -1, -2
+  local px8, py8 = -3, -1
+  local px9, py9 = -1, 1
+  local px10, py10 = -1, 3
+
+  love.graphics.polygon("fill",
+    px1, py1,
+    px2, py2,
+    px3, py3,
+    px4, py4,
+    px5, py5,
+    px6, py6,
+    px7, py7,
+    px8, py8,
+    px9, py9,
+    px10, py10
+  )
+
+  love.graphics.pop()
+end
+
 function love.draw()
   love.graphics.setColor(0, 0.4, 0.4)
   drawTriangle(ship.x, ship.y, ship.width, ship.height, ship.angle)
+  
+
+  local width, height = love.graphics.getDimensions()
+  drawDecagon((width / 2) + 100, (height / 2) + 100)
 end
