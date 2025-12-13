@@ -1,17 +1,29 @@
-function love.load() 
-  local width, height = love.graphics.getDimensions()
-  windowCenterX = width / 2
-  windowCenterY = height / 2
-
-  ship = {
-    x = windowCenterX,
-    y = windowCenterY,
+function newShip(x, y)
+  return {
+    x = x,
+    y = y,
     width = 30,
     height = 15,
     angle = 0,
     speed = 50,
     turnSpeed = 2,
   }
+end
+
+function newAsteroid(x, y)
+  return {
+    x = x,
+    y = y,
+    angle = math.random() * 2 * math.pi,
+  }
+end
+
+function love.load() 
+  local width, height = love.graphics.getDimensions()
+  windowCenterX = width / 2
+  windowCenterY = height / 2
+
+  ship = newShip(windowCenterX, windowCenterY)
 
   asteroids = {}
   asteroids_timer = 0
@@ -47,11 +59,11 @@ function updateAsteroids(dt)
   if asteroids_timer >= 2 then
     asteroids_timer = 0
 
-    local asteroid = {
-      x = math.random(0, love.graphics.getWidth()),
-      y = math.random(0, love.graphics.getHeight()),
-      angle = math.random() * 2 * math.pi,
-    }
+    local asteroid = newAsteroid(
+      math.random(0, love.graphics.getWidth()),
+      math.random(0, love.graphics.getHeight())
+    )
+
     table.insert(asteroids, asteroid)
   end
 
