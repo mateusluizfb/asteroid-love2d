@@ -10,6 +10,15 @@ function newShip(x, y)
   }
 end
 
+function newBullet(x, y, angle)
+  return {
+    x = x,
+    y = y,
+    angle = angle,
+    speed = 100,
+  }
+end
+
 function newAsteroid(x, y)
   return {
     x = x,
@@ -24,33 +33,42 @@ function love.load()
   windowCenterY = height / 2
 
   ship = newShip(windowCenterX, windowCenterY)
+  bullets = {}
 
   asteroids = {}
   asteroids_timer = 0
 end
 
-function updateSpaceship(dt, spaceShip)
-  local moveAmount = spaceShip.speed * dt
+function updateSpaceship(dt)
+  local moveAmount = ship.speed * dt
 
   if love.keyboard.isDown("up") then
-    spaceShip.x = spaceShip.x + math.cos(spaceShip.angle) * moveAmount
-    spaceShip.y = spaceShip.y + math.sin(spaceShip.angle) * moveAmount
+    ship.x = ship.x + math.cos(ship.angle) * moveAmount
+    ship.y = ship.y + math.sin(ship.angle) * moveAmount
   end
 
   if love.keyboard.isDown("down") then
-    spaceShip.x = spaceShip.x - math.cos(spaceShip.angle) * moveAmount
-    spaceShip.y = spaceShip.y - math.sin(spaceShip.angle) * moveAmount
+    ship.x = ship.x - math.cos(ship.angle) * moveAmount
+    ship.y = ship.y - math.sin(ship.angle) * moveAmount
   end
 
-  local turn = spaceShip.turnSpeed * dt
+  local turn = ship.turnSpeed * dt
 
   if love.keyboard.isDown("left") then 
-    spaceShip.angle = spaceShip.angle - turn
+    ship.angle = ship.angle - turn
   end
 
   if love.keyboard.isDown("right") then
-    spaceShip.angle = spaceShip.angle + turn
+    ship.angle = ship.angle + turn
   end
+end
+
+function updateBullets(dt)
+   -- TODO: When bullets go off screen, remove them from the table
+  for _, bullet in ipairs(bullets) do
+    bullet.x = bullet.x + math.cos(bullet.angle) * bullet.speed * dt
+    bullet.y = bullet.y + math.sin(bullet.angle) * bullet.speed * dt
+  end 
 end
 
 function updateAsteroids(dt)
@@ -67,15 +85,29 @@ function updateAsteroids(dt)
     table.insert(asteroids, asteroid)
   end
 
+  -- TODO: When asteroids go off screen, remove them from the table
   for _, asteroid in ipairs(asteroids) do
     asteroid.x = asteroid.x + math.cos(asteroid.angle) * 20 * dt
     asteroid.y = asteroid.y + math.sin(asteroid.angle) * 20 * dt
   end
 end
 
+function love.keypressed(key, scancode, isrepeat)
+  if key == "space" then
+    local bullet = newBullet(
+      ship.x + (ship.width / 2) * math.cos(ship.angle),
+      ship.y + (ship.height / 2) * math.sin(ship.angle),
+      ship.angle
+    )
+
+    table.insert(bullets, bullet)
+  end
+end
+
 function love.update(dt)
-  updateSpaceship(dt, ship)
+  updateSpaceship(dt)
   updateAsteroids(dt)
+  updateBullets(dt)
 end
 
 function drawTriangle(x, y, width, height, angle)
@@ -133,6 +165,16 @@ function drawDecagon(x, y, angle)
   love.graphics.pop()
 end
 
+function drawCircle(x, y, radius)
+  -- love.graphics.push()
+
+  -- love.graphics.translate(x, y)
+
+  love.graphics.circle("fill", x, y, radius)
+
+  -- love.graphics.pop()
+end
+
 function love.draw()
   love.graphics.setColor(0, 0.4, 0.4)
   drawTriangle(ship.x, ship.y, ship.width, ship.height, ship.angle)
@@ -141,4 +183,9 @@ function love.draw()
    love.graphics.setColor(0.5, 0.5, 0.5)
    drawDecagon(asteroid.x, asteroid.y, asteroid.angle)
   end
+
+  for _, bullet in ipairs(bullets) do
+    love.graphics.setColor(1, 1, 0)
+    drawCircle(bullet.x, bullet.y, 3)
+  end 
 end
