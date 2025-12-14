@@ -40,7 +40,6 @@ function love.load()
   local ship = newShip(windowCenterX, windowCenterY)
   bullets = {}
 
-  asteroids = {}
   asteroids_timer = 0
 
   objects = {ship}
@@ -96,7 +95,12 @@ function updateBullets(dt)
   end 
 end
 
-function updateAsteroids(dt)
+function updateAsteroid(dt, asteroid)
+  asteroid.x = asteroid.x + math.cos(asteroid.angle) * 20 * dt
+  asteroid.y = asteroid.y + math.sin(asteroid.angle) * 20 * dt
+end
+
+function love.update(dt)
   asteroids_timer = asteroids_timer + dt
 
   if asteroids_timer >= 2 then
@@ -107,24 +111,19 @@ function updateAsteroids(dt)
       math.random(0, love.graphics.getHeight())
     )
 
-    table.insert(asteroids, asteroid)
+    table.insert(objects, asteroid)
   end
 
-  -- TODO: When asteroids go off screen, remove them from the table
-  for _, asteroid in ipairs(asteroids) do
-    asteroid.x = asteroid.x + math.cos(asteroid.angle) * 20 * dt
-    asteroid.y = asteroid.y + math.sin(asteroid.angle) * 20 * dt
-  end
-end
-
-function love.update(dt)
-  -- updateSpaceship(dt)
-  updateAsteroids(dt)
+  -- updateAsteroids(dt)
   updateBullets(dt)
 
   for _, object in ipairs(objects) do
     if object.type == "ship" then
       updateSpaceship(dt, object)
+    end
+
+    if object.type == "asteroid" then
+      updateAsteroid(dt, object)
     end
   end
 end
@@ -189,17 +188,16 @@ function drawCircle(x, y, radius)
 end
 
 function love.draw()
-  love.graphics.setColor(0, 0.4, 0.4)
-  
   for _, object in ipairs(objects) do
     if object.type == "ship" then
+      love.graphics.setColor(0, 0.4, 0.4)
       drawTriangle(object.x, object.y, object.width, object.height, object.angle)
     end
-  end
 
-  for _, asteroid in ipairs(asteroids) do
-   love.graphics.setColor(0.5, 0.5, 0.5)
-   drawDecagon(asteroid.x, asteroid.y, asteroid.angle)
+    if object.type == "asteroid" then
+      love.graphics.setColor(0.5, 0.5, 0.5)
+      drawDecagon(object.x, object.y, object.angle)
+    end
   end
 
   for _, bullet in ipairs(bullets) do
