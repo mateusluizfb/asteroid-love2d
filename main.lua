@@ -37,10 +37,9 @@ function love.load()
 
   pressedKeys = {}
 
-  local ship = newShip(windowCenterX, windowCenterY)
-  bullets = {}
-
   asteroids_timer = 0
+
+  local ship = newShip(windowCenterX, windowCenterY)
 
   objects = {ship}
 end
@@ -80,19 +79,16 @@ function updateSpaceship(dt, ship)
           ship.angle
         )
 
-        table.insert(bullets, bullet)
+        table.insert(objects, bullet)
       end
     end
     pressedKeys[key] = isDown
   end
 end
 
-function updateBullets(dt)
-   -- TODO: When bullets go off screen, remove them from the table
-  for _, bullet in ipairs(bullets) do
-    bullet.x = bullet.x + math.cos(bullet.angle) * bullet.speed * dt
-    bullet.y = bullet.y + math.sin(bullet.angle) * bullet.speed * dt
-  end 
+function updateBullets(dt, bullet)
+  bullet.x = bullet.x + math.cos(bullet.angle) * bullet.speed * dt
+  bullet.y = bullet.y + math.sin(bullet.angle) * bullet.speed * dt
 end
 
 function updateAsteroid(dt, asteroid)
@@ -101,6 +97,7 @@ function updateAsteroid(dt, asteroid)
 end
 
 function love.update(dt)
+  -- Handle asteroid spawning
   asteroids_timer = asteroids_timer + dt
 
   if asteroids_timer >= 2 then
@@ -114,9 +111,7 @@ function love.update(dt)
     table.insert(objects, asteroid)
   end
 
-  -- updateAsteroids(dt)
-  updateBullets(dt)
-
+  -- Update all objects
   for _, object in ipairs(objects) do
     if object.type == "ship" then
       updateSpaceship(dt, object)
@@ -124,6 +119,10 @@ function love.update(dt)
 
     if object.type == "asteroid" then
       updateAsteroid(dt, object)
+    end
+
+    if object.type == "bullet" then
+      updateBullets(dt, object)
     end
   end
 end
@@ -198,10 +197,10 @@ function love.draw()
       love.graphics.setColor(0.5, 0.5, 0.5)
       drawDecagon(object.x, object.y, object.angle)
     end
-  end
 
-  for _, bullet in ipairs(bullets) do
-    love.graphics.setColor(1, 1, 0)
-    drawCircle(bullet.x, bullet.y, 3)
-  end 
+    if object.type == "bullet" then
+      love.graphics.setColor(1, 1, 0)
+      drawCircle(object.x, object.y, 3)
+    end
+  end
 end
