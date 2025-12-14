@@ -1,5 +1,6 @@
 function newShip(x, y)
   return {
+    type = "ship",
     x = x,
     y = y,
     width = 30,
@@ -12,6 +13,7 @@ end
 
 function newBullet(x, y, angle)
   return {
+    type = "bullet",
     x = x,
     y = y,
     angle = angle,
@@ -21,6 +23,7 @@ end
 
 function newAsteroid(x, y)
   return {
+    type = "asteroid",
     x = x,
     y = y,
     angle = math.random() * 2 * math.pi,
@@ -32,14 +35,18 @@ function love.load()
   windowCenterX = width / 2
   windowCenterY = height / 2
 
-  ship = newShip(windowCenterX, windowCenterY)
+  pressedKeys = {}
+
+  local ship = newShip(windowCenterX, windowCenterY)
   bullets = {}
 
   asteroids = {}
   asteroids_timer = 0
+
+  objects = {ship}
 end
 
-function updateSpaceship(dt)
+function updateSpaceship(dt, ship)
   local moveAmount = ship.speed * dt
 
   if love.keyboard.isDown("up") then
@@ -60,6 +67,24 @@ function updateSpaceship(dt)
 
   if love.keyboard.isDown("right") then
     ship.angle = ship.angle + turn
+  end
+
+  local keys = {"space"}
+
+  for _, key in ipairs(keys) do
+    local isDown = love.keyboard.isDown(key)
+    if isDown and not pressedKeys[key] then
+      if key == "space" then
+        local bullet = newBullet(
+          ship.x + (ship.width / 2) * math.cos(ship.angle),
+          ship.y + (ship.height / 2) * math.sin(ship.angle),
+          ship.angle
+        )
+
+        table.insert(bullets, bullet)
+      end
+    end
+    pressedKeys[key] = isDown
   end
 end
 
@@ -92,22 +117,16 @@ function updateAsteroids(dt)
   end
 end
 
-function love.keypressed(key, scancode, isrepeat)
-  if key == "space" then
-    local bullet = newBullet(
-      ship.x + (ship.width / 2) * math.cos(ship.angle),
-      ship.y + (ship.height / 2) * math.sin(ship.angle),
-      ship.angle
-    )
-
-    table.insert(bullets, bullet)
-  end
-end
-
 function love.update(dt)
-  updateSpaceship(dt)
+  -- updateSpaceship(dt)
   updateAsteroids(dt)
   updateBullets(dt)
+
+  for _, object in ipairs(objects) do
+    if object.type == "ship" then
+      updateSpaceship(dt, object)
+    end
+  end
 end
 
 function drawTriangle(x, y, width, height, angle)
@@ -166,19 +185,18 @@ function drawDecagon(x, y, angle)
 end
 
 function drawCircle(x, y, radius)
-  -- love.graphics.push()
-
-  -- love.graphics.translate(x, y)
-
   love.graphics.circle("fill", x, y, radius)
-
-  -- love.graphics.pop()
 end
 
 function love.draw()
   love.graphics.setColor(0, 0.4, 0.4)
-  drawTriangle(ship.x, ship.y, ship.width, ship.height, ship.angle)
   
+  for _, object in ipairs(objects) do
+    if object.type == "ship" then
+      drawTriangle(object.x, object.y, object.width, object.height, object.angle)
+    end
+  end
+
   for _, asteroid in ipairs(asteroids) do
    love.graphics.setColor(0.5, 0.5, 0.5)
    drawDecagon(asteroid.x, asteroid.y, asteroid.angle)
