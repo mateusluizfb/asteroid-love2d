@@ -3,6 +3,12 @@ local bullet = require("bullet")
 local asteroid = require("asteroid")
 local shapes = require("shapes")
 
+local dispatchTable = {
+  ship = ship,
+  bullet = bullet,
+  asteroid = asteroid
+}
+
 function love.load() 
   local width, height = love.graphics.getDimensions() 
   local windowCenterX = width / 2
@@ -30,32 +36,14 @@ function love.update(dt)
 
   -- Update all objects
   for _, object in ipairs(objects) do
-    if object.type == "ship" then
-      ship.update(dt, object)
-    end
-
-    if object.type == "asteroid" then
-      asteroid.update(dt, object)
-    end
-
-    if object.type == "bullet" then
-      bullet.update(dt, object)
-    end
+    updateFn = dispatchTable[object.type].update
+    updateFn(dt, object)
   end
 end
 
 function love.draw()
   for _, object in ipairs(objects) do
-    if object.type == "ship" then
-      ship.draw(object)
-    end
-
-    if object.type == "asteroid" then
-      asteroid.draw(object)
-    end
-
-    if object.type == "bullet" then
-      bullet.draw(object)
-    end
+    drawFn = dispatchTable[object.type].draw
+    drawFn(object)
   end
 end
