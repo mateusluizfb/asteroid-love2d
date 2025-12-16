@@ -8,6 +8,7 @@ local pressedKeys = {}
 function ship.new(x, y)
   return {
     type = "ship",
+    collider = "triangle", 
     x = x,
     y = y,
     width = 30,
@@ -17,6 +18,10 @@ function ship.new(x, y)
     turnSpeed = 2,
   }
 end
+
+function ship.collide(instance, other)
+  print("Ship collided with " .. other.collider)
+end 
 
 function ship.update(dt, instance)
   local moveAmount = instance.speed * dt
@@ -49,9 +54,11 @@ function ship.update(dt, instance)
     local isDown = love.keyboard.isDown(key)
     if isDown and not pressedKeys[key] then
       if key == "space" then
+        local bulletOffset = 15
+
         local bullet = bullet.new(
-          instance.x + (instance.width / 2) * math.cos(instance.angle),
-          instance.y + (instance.height / 2) * math.sin(instance.angle),
+          instance.x + ((instance.width / 2) + bulletOffset) * math.cos(instance.angle),
+          instance.y + ((instance.height / 2) + bulletOffset)* math.sin(instance.angle),
           instance.angle
         )
 

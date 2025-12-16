@@ -39,6 +39,28 @@ function love.update(dt)
     updateFn = dispatchTable[object.type].update
     updateFn(dt, object)
   end
+
+  -- Check for collisions
+  -- Naive O(n^2) collision detection for demonstration purposes
+  for i = 1, #objects do
+    for j = i + 1, #objects do
+      local objA = objects[i]
+      local objB = objects[j]
+      
+      if shapes.checkCollision(objA, objB) then
+        collideFnA = dispatchTable[objA.type].collide
+        collideFnB = dispatchTable[objB.type].collide
+      
+        if collideFnA then
+          collideFnA(objA, objB)
+        end
+
+        if collideFnB then
+          collideFnB(objB, objA)
+        end
+      end
+    end
+  end
 end
 
 function love.draw()

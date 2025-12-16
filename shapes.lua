@@ -1,5 +1,60 @@
 local shapes = {}
 
+function _clamp(value, min, max)
+  if value < min then
+    return min
+  elseif value > max then
+    return max
+  else
+    return value
+  end
+end
+
+function shapes.checkCollision(objA, objB)
+  if objA.collider == "circle" and objB.collider == "circle" then
+    local dx = objA.x - objB.x
+    local dy = objA.y - objB.y
+    local distance = math.sqrt(dx * dx + dy * dy)
+    return distance < (objA.radius + objB.radius)
+  end
+
+  if objA.collider == "triangle" and objB.collider == "circle" or
+    objA.collider == "circle" and objB.collider == "triangle" then
+
+    local triangle, circle
+
+    if objA.collider == "triangle" then
+      triangle = objA
+      circle = objB
+    else
+      triangle = objB
+      circle = objA
+    end
+
+    local half_width = triangle.width / 2
+    local half_height = triangle.height / 2
+
+    local cx = circle.x - triangle.x
+    local cy = circle.y - triangle.y
+
+    local cos_angle = math.cos(-triangle.angle)
+    local sin_angle = math.sin(-triangle.angle)
+
+    local rotated_cx = cx * cos_angle - cy * sin_angle
+    local rotated_cy = cx * sin_angle + cy * cos_angle
+
+    local closest_x = _clamp(rotated_cx, -half_width, half_width)
+    local closest_y = _clamp(rotated_cy, -half_height, half_height)
+
+    local dx = rotated_cx - closest_x
+    local dy = rotated_cy - closest_y
+
+    return (dx * dx + dy * dy) < (circle.radius * circle.radius)
+  end
+
+  return false
+end
+
 function shapes.drawTriangle(x, y, width, height, angle)
   local half_width = width / 2
 

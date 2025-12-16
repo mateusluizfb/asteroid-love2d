@@ -5,10 +5,16 @@ local asteroid = {}
 function asteroid.new(x, y)
   return {
     type = "asteroid",
+    collider = "circle",
     x = x,
     y = y,
+    radius = 10,
     angle = math.random() * 2 * math.pi,
   }
+end
+
+function asteroid.collide(instance, other)
+  print("Asteroid collided with " .. other.collider)
 end
 
 function asteroid.update(dt, instance)
