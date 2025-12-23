@@ -3,6 +3,21 @@
 
 local Components = {}
 
+-- Health component
+function Components.Health(maxHealth)
+  return {
+    maxHealth = maxHealth or 100,
+    currentHealth = maxHealth or 100
+  }
+end
+
+-- Damage component
+function Components.Damage(amount)
+  return {
+    amount = amount or 10
+  }
+end
+
 -- Position component
 function Components.Position(x, y)
   return {
@@ -26,6 +41,13 @@ function Components.Rotation(angle, turnSpeed)
   return {
     angle = angle or 0,
     turnSpeed = turnSpeed or 0
+  }
+end
+
+-- Colliding component
+function Components.Colliding(isColliding)
+  return {
+    isColliding = isColliding or false
   }
 end
 

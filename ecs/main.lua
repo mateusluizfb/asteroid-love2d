@@ -13,6 +13,7 @@ function love.load()
   ECS.addSystem("Movement", Systems.Movement)
   ECS.addSystem("AsteroidSpawner", Systems.AsteroidSpawner)
   ECS.addSystem("Collision", Systems.Collision)
+  ECS.addSystem("HandleCollisions", Systems.HandleCollisions)
   ECS.addSystem("Rendering", Systems.Rendering)
   
   -- Create player entity
@@ -23,6 +24,7 @@ function love.load()
   ECS.addComponent(playerId, "TriangleRenderable", Components.TriangleRenderable(30, 15, 0, 0.4, 0.4))
   ECS.addComponent(playerId, "PlayerInput", Components.PlayerInput(50, 2))
   ECS.addComponent(playerId, "Ship", Components.Ship())
+  ECS.addComponent(playerId, "Health", Components.Health(100))
 end
 
 function love.update(dt)

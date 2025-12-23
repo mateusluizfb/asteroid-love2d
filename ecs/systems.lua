@@ -79,6 +79,7 @@ function Systems.PlayerInput.createBullet(x, y, angle)
   ECS.addComponent(bulletId, "CircleCollider", Components.CircleCollider(5))
   ECS.addComponent(bulletId, "CircleRenderable", Components.CircleRenderable(5, 1, 1, 0))
   ECS.addComponent(bulletId, "Bullet", Components.Bullet())
+  ECS.addComponent(bulletId, "Damage", Components.Damage(25))
 end
 
 -- Collision System: Detects and handles collisions
@@ -129,7 +130,7 @@ function Systems.Collision.update(dt)
   -- Gather all entities with colliders
   local circleEntities = ECS.getEntitiesWith("Position", "CircleCollider")
   local triangleEntities = ECS.getEntitiesWith("Position", "TriangleCollider", "Rotation")
-  
+
   -- Check all pairs for collisions
   for i = 1, #circleEntities do
     for j = i + 1, #circleEntities do
@@ -142,7 +143,8 @@ function Systems.Collision.update(dt)
       local colB = ECS.getComponent(entityB, "CircleCollider")
       
       if checkCircleCircle(posA, colA, posB, colB) then
-        Systems.Collision.handleCollision(entityA, entityB)
+        ECS.addComponent(entityA, "Colliding", Components.Colliding(true))
+        ECS.addComponent(entityB, "Colliding", Components.Colliding(true))
       end
     end
   end
@@ -155,28 +157,25 @@ function Systems.Collision.update(dt)
       local colT = ECS.getComponent(triangleEntity, "TriangleCollider")
       local posC = ECS.getComponent(circleEntity, "Position")
       local colC = ECS.getComponent(circleEntity, "CircleCollider")
-      
+
       if checkTriangleCircle(posT, rotT, colT, posC, colC) then
-        Systems.Collision.handleCollision(triangleEntity, circleEntity)
+        ECS.addComponent(triangleEntity, "Colliding", Components.Colliding(true))
+        ECS.addComponent(circleEntity, "Colliding", Components.Colliding(true))
       end
     end
   end
 end
 
-function Systems.Collision.handleCollision(entityA, entityB)
-  local typeA = Systems.Collision.getEntityType(entityA)
-  local typeB = Systems.Collision.getEntityType(entityB)
-  
-  print(typeA .. " collided with " .. typeB)
-  
-  -- Add specific collision logic here if needed
-end
+Systems.HandleCollisions = {}
+function Systems.HandleCollisions.update(dt)
+  local collidingEntities = ECS.getEntitiesWith("Colliding")
 
-function Systems.Collision.getEntityType(entityId)
-  if ECS.hasComponent(entityId, "Ship") then return "ship" end
-  if ECS.hasComponent(entityId, "Bullet") then return "bullet" end
-  if ECS.hasComponent(entityId, "Asteroid") then return "asteroid" end
-  return "unknown"
+
+  for _, entityId in ipairs(collidingEntities) do
+    if ECS.hasComponent(entityId, "Ship") == false then 
+      ECS.removeEntity(entityId)
+    end
+  end
 end
 
 -- Asteroid Spawning System: Periodically spawns new asteroids
@@ -203,9 +202,10 @@ function Systems.AsteroidSpawner.update(dt)
       speed = 20
     })
     ECS.addComponent(asteroidId, "Rotation", Components.Rotation(angle, 0))
-    ECS.addComponent(asteroidId, "CircleCollider", Components.CircleCollider(10))
+    ECS.addComponent(asteroidId, "CircleCollider", Components.CircleCollider(30))
     ECS.addComponent(asteroidId, "DecagonRenderable", Components.DecagonRenderable(0.5, 0.5, 0.5))
     ECS.addComponent(asteroidId, "Asteroid", Components.Asteroid())
+    ECS.addComponent(asteroidId, "Health", Components.Health(50))
   end
 end
 
