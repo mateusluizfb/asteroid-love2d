@@ -166,13 +166,29 @@ function Systems.Collision.update(dt)
   end
 end
 
+-- Handle Collisions System: Removes non-ship entities that are colliding
 Systems.HandleCollisions = {}
 function Systems.HandleCollisions.update(dt)
   local collidingEntities = ECS.getEntitiesWith("Colliding")
 
-
   for _, entityId in ipairs(collidingEntities) do
     if ECS.hasComponent(entityId, "Ship") == false then 
+      ECS.removeEntity(entityId)
+    end
+  end
+end
+
+-- Boundary Removal System: Removes entities that go out of bounds
+Systems.BoundaryRemoval = {}
+function Systems.BoundaryRemoval.update(dt)
+  local entities = ECS.getEntitiesWith("Position")
+  local width = love.graphics.getWidth()
+  local height = love.graphics.getHeight()
+
+  for _, entityId in ipairs(entities) do
+    local pos = ECS.getComponent(entityId, "Position")
+  
+    if pos.x < -50 or pos.x > width + 50 or pos.y < -50 or pos.y > height + 50 then
       ECS.removeEntity(entityId)
     end
   end

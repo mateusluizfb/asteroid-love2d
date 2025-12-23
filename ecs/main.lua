@@ -14,6 +14,7 @@ function love.load()
   ECS.addSystem("AsteroidSpawner", Systems.AsteroidSpawner)
   ECS.addSystem("Collision", Systems.Collision)
   ECS.addSystem("HandleCollisions", Systems.HandleCollisions)
+  ECS.addSystem("BoundaryRemoval", Systems.BoundaryRemoval)
   ECS.addSystem("Rendering", Systems.Rendering)
   
   -- Create player entity
