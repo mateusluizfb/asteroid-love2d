@@ -15,16 +15,21 @@ function love.load()
   local windowCenterY = height / 2
   local player = ship.new(windowCenterX, windowCenterY)
 
-  asteroids_timer = 0
+  globalState = {
+    windowWidth = width,
+    windowHeight = height
+  }
+
+  astroidsTimer = 0
   objects = {player}
 end
 
 function love.update(dt)
   -- Handle asteroid spawning
-  asteroids_timer = asteroids_timer + dt
+  astroidsTimer = astroidsTimer + dt
 
-  if asteroids_timer >= 2 then
-    asteroids_timer = 0
+  if astroidsTimer >= 2 then
+    astroidsTimer = 0
 
     local asteroid = asteroid.new(
       math.random(0, love.graphics.getWidth()),
@@ -59,6 +64,13 @@ function love.update(dt)
           collideFnB(objB, objA)
         end
       end
+    end
+  end
+
+  -- Check for dead objects and remove them
+  for i = #objects, 1, -1 do
+    if objects[i].isDead then
+      table.remove(objects, i)
     end
   end
 end
