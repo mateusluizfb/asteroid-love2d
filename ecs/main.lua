@@ -16,7 +16,11 @@ function love.load()
   ECS.addSystem("HandleCollisions", Systems.HandleCollisions)
   ECS.addSystem("BoundaryRemoval", Systems.BoundaryRemoval)
   ECS.addSystem("Rendering", Systems.Rendering)
-  
+  ECS.addSystem("CommandProcessing", Systems.CommandProcessing)
+
+  local globalStateId = ECS.createEntity()
+  ECS.addComponent(globalStateId, "GlobalState", Components.GlobalState())
+
   -- Create player entity
   local playerId = ECS.createEntity()
   ECS.addComponent(playerId, "Position", Components.Position(windowCenterX, windowCenterY))
@@ -26,6 +30,10 @@ function love.load()
   ECS.addComponent(playerId, "PlayerInput", Components.PlayerInput(50, 2))
   ECS.addComponent(playerId, "Ship", Components.Ship())
   ECS.addComponent(playerId, "Health", Components.Health(100))
+end
+
+function love.keypressed(key)
+  Systems.PlayerInput.keyPressed(key)
 end
 
 function love.update(dt)

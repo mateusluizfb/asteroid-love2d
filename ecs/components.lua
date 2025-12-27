@@ -102,6 +102,17 @@ function Components.PlayerInput(speed, turnSpeed)
   }
 end
 
+function Components.CommandsBuffer()
+  return {
+    commands = {}
+  }
+end
+
+function Components.GlobalState()
+  return {
+  }
+end
+
 -- Tag components (no data, just markers)
 function Components.Ship()
   return {tag = "ship"}

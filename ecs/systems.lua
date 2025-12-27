@@ -82,6 +82,31 @@ function Systems.PlayerInput.createBullet(x, y, angle)
   ECS.addComponent(bulletId, "Damage", Components.Damage(25))
 end
 
+function Systems.PlayerInput.keyPressed(key)
+  if love.keyboard.isDown("lshift") and key == ";" then 
+    print("Command mode activated")
+
+    local globalStateId = ECS.getOneEntityWith("GlobalState")
+    ECS.addComponent(globalStateId, "CommandsBuffer", Components.CommandsBuffer())
+  end
+end
+
+Systems.CommandProcessing = {}
+function Systems.CommandProcessing.update(dt)
+  local globalStateId = ECS.getOneEntityWith("GlobalState", "CommandsBuffer")
+
+  if not globalStateId then
+    return
+  end
+
+  print("Listening for commands")
+
+  if love.keyboard.isDown("return") then
+    print("Processing command")
+    ECS.removeComponent(globalStateId, "CommandsBuffer")
+  end
+end
+
 -- Collision System: Detects and handles collisions
 Systems.Collision = {}
 

@@ -59,7 +59,8 @@ end
 function ECS.getEntitiesWith(...)
   local componentTypes = {...}
   local result = {}
-  
+ 
+  -- TODO: This is slow, we can check the intersection of entities for each component type for better performance
   for entityId, _ in pairs(ECS.entities) do
     local hasAll = true
     for _, componentType in ipairs(componentTypes) do
@@ -74,6 +75,27 @@ function ECS.getEntitiesWith(...)
   end
   
   return result
+end
+
+-- Get one entity with specific components
+function ECS.getOneEntityWith(...)
+  local componentTypes = {...}
+
+  -- TODO: This is slow, we can check the intersection of entities for each component type for better performance
+  for entityId, _ in pairs(ECS.entities) do
+    local hasAll = true
+    for _, componentType in ipairs(componentTypes) do
+      if not ECS.hasComponent(entityId, componentType) then
+        hasAll = false
+        break
+      end
+    end
+    if hasAll then
+      return entityId
+    end
+  end
+
+  return nil
 end
 
 -- Register a system
