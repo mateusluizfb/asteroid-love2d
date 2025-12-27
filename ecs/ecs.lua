@@ -60,7 +60,7 @@ function ECS.getEntitiesWith(...)
   local componentTypes = {...}
   local result = {}
  
-  -- TODO: This is slow, we can check the intersection of entities for each component type for better performance
+  -- TODO: This is slow, there might be solutions around indexing or caching the access, calculating the intersection of entities between components
   for entityId, _ in pairs(ECS.entities) do
     local hasAll = true
     for _, componentType in ipairs(componentTypes) do
@@ -81,7 +81,7 @@ end
 function ECS.getOneEntityWith(...)
   local componentTypes = {...}
 
-  -- TODO: This is slow, we can check the intersection of entities for each component type for better performance
+  -- TODO: This is slow, there might be solutions around indexing or caching the access, calculating the intersection of entities between components
   for entityId, _ in pairs(ECS.entities) do
     local hasAll = true
     for _, componentType in ipairs(componentTypes) do

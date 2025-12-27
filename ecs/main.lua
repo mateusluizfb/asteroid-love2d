@@ -16,6 +16,7 @@ function love.load()
   ECS.addSystem("HandleCollisions", Systems.HandleCollisions)
   ECS.addSystem("BoundaryRemoval", Systems.BoundaryRemoval)
   ECS.addSystem("Rendering", Systems.Rendering)
+  ECS.addSystem("CommandProcessing", Systems.CommandProcessing)
 
   local globalStateId = ECS.createEntity()
   ECS.addComponent(globalStateId, "GlobalState", Components.GlobalState())
@@ -30,6 +31,8 @@ function love.load()
   ECS.addComponent(playerId, "Ship", Components.Ship())
   ECS.addComponent(playerId, "Health", Components.Health(100))
 end
+
+love.keypressed = Systems.PlayerInput.keyPressed
 
 function love.update(dt)
   local startingTime = os.clock()
