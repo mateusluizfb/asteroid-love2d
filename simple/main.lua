@@ -73,6 +73,10 @@ function love.update(dt)
       table.remove(objects, i)
     end
   end
+
+  -- Count fps:
+  local fps = love.timer.getFPS()
+  love.window.setTitle("Simple Asteroids - FPS: " .. fps)
 end
 
 function love.draw()

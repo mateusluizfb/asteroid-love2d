@@ -39,6 +39,10 @@ end
 function love.update(dt)
   -- Update all systems
   ECS.updateSystems(dt)
+
+  -- Count fps:
+  local fps = love.timer.getFPS()
+  love.window.setTitle("ECS Asteroids - FPS: " .. fps)
 end
 
 function love.draw()
