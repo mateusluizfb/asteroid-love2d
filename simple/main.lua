@@ -25,6 +25,8 @@ function love.load()
 end
 
 function love.update(dt)
+  local startingTime = os.clock()
+
   -- Handle asteroid spawning
   astroidsTimer = astroidsTimer + dt
 
@@ -76,7 +78,11 @@ function love.update(dt)
 
   -- Count fps:
   local fps = love.timer.getFPS()
+  local frameTime = love.timer.getDelta()
   love.window.setTitle("Simple Asteroids - FPS: " .. fps)
+
+  local endTime = os.clock()
+  print("Update Time: " .. (endTime - startingTime) * 1000 .. " ms")
 end
 
 function love.draw()

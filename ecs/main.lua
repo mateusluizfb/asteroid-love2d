@@ -16,7 +16,6 @@ function love.load()
   ECS.addSystem("HandleCollisions", Systems.HandleCollisions)
   ECS.addSystem("BoundaryRemoval", Systems.BoundaryRemoval)
   ECS.addSystem("Rendering", Systems.Rendering)
-  ECS.addSystem("CommandProcessing", Systems.CommandProcessing)
 
   local globalStateId = ECS.createEntity()
   ECS.addComponent(globalStateId, "GlobalState", Components.GlobalState())
@@ -32,17 +31,19 @@ function love.load()
   ECS.addComponent(playerId, "Health", Components.Health(100))
 end
 
-function love.keypressed(key)
-  Systems.PlayerInput.keyPressed(key)
-end
-
 function love.update(dt)
+  local startingTime = os.clock()
+
   -- Update all systems
   ECS.updateSystems(dt)
 
   -- Count fps:
   local fps = love.timer.getFPS()
-  love.window.setTitle("ECS Asteroids - FPS: " .. fps)
+  local frameTime = love.timer.getDelta()
+  love.window.setTitle("Simple Asteroids - FPS: " .. fps)
+
+  local endTime = os.clock()
+  print("Update Time: " .. (endTime - startingTime) * 1000 .. " ms")
 end
 
 function love.draw()
